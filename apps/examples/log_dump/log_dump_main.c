@@ -25,12 +25,13 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <tinyara/log_dump/log_dump.h>
+#include <tinyara/compression.h>
 
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
 
-#define READ_BUFFER_SIZE	1024	/* user configurable read size */
+#define READ_BUFFER_SIZE	4096	/* user configurable read size */
 
 /****************************************************************************
  * log_dump_main
@@ -45,6 +46,7 @@ int log_dump_main(int argc, char *argv[])
 	int ret = 1;
 	char buf[READ_BUFFER_SIZE];
 	int fd = OPEN_LOGDUMP();
+	char uncompressed[READ_BUFFER_SIZE];
 
 	if (fd < 0) {
 		printf("Please ensure that procfs is mounted\n");
@@ -75,16 +77,32 @@ int log_dump_main(int argc, char *argv[])
 		printf("Failed to stop log dump, errno %d\n", get_errno());
 		goto errout;
 	}
-
+	int total = 0;
+	int count = 0;
 	while (ret > 0) {
-		ret = READ_LOGDUMP(fd, buf, sizeof(buf));
+		ret = READ_LOGDUMP(fd, buf, 4);
+		total += 4;
+		if (ret <= 0) break;
+		int size = (buf[0] - '0') * 1000 + (buf[1] - '0') * 100 + (buf[2] - '0') * 10 + (buf[3] - '0');
+		printf("\n\n######################## %d compressed size : %d ####################\n\n", count, size);
+		count++;
+		ret = READ_LOGDUMP(fd, buf, size);
+		total += ret;
+		int writesize = 4096;
+		ret = mz_uncompress(uncompressed, &writesize, buf, ret);
+		ret = writesize;
+		printf("\nuncompressed size: %d\n", writesize);
 		for (int i = 0; i < ret; i++) {
-			printf("%c", buf[i]);
+				printf("%c", uncompressed[i]);
 		}
 	}
 
-        printf("\n*********************   LOG DUMP END  ***********************\n");
+    printf("\n*********************   LOG DUMP END  ***********************\n");
 
+	if (START_LOGDUMP_SAVE(fd) < 0)	{
+		printf("Failed to start log dump, errno %d\n", get_errno());
+		goto errout;
+	}
 	CLOSE_LOGDUMP(fd);
 
 	return 0;

@@ -1,0 +1,17 @@
+
+ifeq ($(CONFIG_LOG_DUMP_TEST),y)
+
+ifeq ($(CONFIG_LOG_DUMP_HIGH_PRIO_TEST),y)
+CSRCS += log_dump_high_prio_test.c
+endif
+ifeq ($(CONFIG_LOG_DUMP_MEM_LOCK_TEST),y)
+CSRCS += log_dump_mem_lock_test.c
+endif
+ifeq ($(CONFIG_LOG_DUMP_SCHED_LOCK_TEST),y)
+CSRCS += log_dump_sched_lock_test.c
+endif
+
+DEPPATH += --dep-path log_dump_test
+VPATH += :log_dump_test
+
+endif
