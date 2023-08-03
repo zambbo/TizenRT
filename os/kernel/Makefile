@@ -79,6 +79,7 @@ include debug/Make.defs
 include preference/Make.defs
 include task_monitor/Make.defs
 include log_dump/Make.defs
+include log_dump_test/Make.defs
 
 AOBJS = $(ASRCS:.S=$(OBJEXT))
 COBJS = $(CSRCS:.c=$(OBJEXT))

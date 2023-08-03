@@ -101,8 +101,11 @@
 #include "messaging/message_ctrl.h"
 #endif
 #ifdef CONFIG_LOG_DUMP
-#include <tinyara/log_dump/log_dump.h>
 #include <tinyara/log_dump/log_dump_internal.h>
+#include <tinyara/log_dump/log_dump.h>
+#ifdef CONFIG_LOG_DUMP_TEST
+#include "log_dump_test/log_dump_test.h"
+#endif
 #endif
 #ifdef CONFIG_SECURITY_LEVEL
 #include <tinyara/security_level.h>
@@ -311,6 +314,24 @@ static inline void os_do_appstart(void)
 	if (pid < 0) {
 		sdbg("Failed to start log dump");
 	}
+#ifdef CONFIG_LOG_DUMP_HIGH_PRIO_TEST
+	pid = kernel_thread(LOG_DUMP_HIGH_PRIO_TEST_NAME, 225, 16384, log_dump_high_prio_test, NULL);
+	if (pid < 0) {
+		sdbg("Failed to start log dump high prio test");
+	}
+#endif
+#ifdef CONFIG_LOG_DUMP_SCHED_LOCK_TEST
+	pid = kernel_thread(LOG_DUMP_SCHED_LOCK_TEST_NAME, 100, 16384, log_dump_sched_lock_test, NULL);
+	if (pid < 0) {
+		sdbg("Failed to start log dump sched lock test");
+	}
+#endif
+#ifdef CONFIG_LOG_DUMP_MEM_LOCK_TEST
+	pid = kernel_thread(LOG_DUMP_MEM_LOCK_TEST_NAME, 225, 16384, log_dump_mem_lock_test, NULL);
+	if (pid < 0) {
+		sdbg("Failed to start log dump mem lock test");
+	}
+#endif
 #endif
 
 #ifdef CONFIG_TASK_MONITOR

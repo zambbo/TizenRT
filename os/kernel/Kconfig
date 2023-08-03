@@ -1029,5 +1029,24 @@ config LOG_DUMP_MAX_FREE_HEAP
 config LOG_DUMP_NUMBUFS
 	int "Number of buffers to reserve for log dump"
 	default 2
+	
+config LOG_DUMP_TEST
+	bool "Enable log dump test thread"
+	depends on LOG_DUMP
+	default n
 
+config LOG_DUMP_HIGH_PRIO_TEST
+	bool "Enable log dump high priority test thread"
+	depends on LOG_DUMP_TEST
+	default n
+
+config LOG_DUMP_SCHED_LOCK_TEST
+	bool "Enable log dump sched lock test thread"
+	depends on LOG_DUMP_TEST
+	default n
+
+config LOG_DUMP_MEM_LOCK_TEST
+	bool "Enable log dump memory lock test thread"
+	depends on LOG_DUMP_TEST
+	default n
 endif # LOG_DUMP

@@ -61,12 +61,18 @@
  * hello_main
  ****************************************************************************/
 
+int count = 0;
+
 #ifdef CONFIG_BUILD_KERNEL
 int main(int argc, FAR char *argv[])
 #else
 int hello_main(int argc, char *argv[])
 #endif
 {
-	printf("Hello, World!!\n");
+	
+	for (int i=count; i<count +1000000; i+=10)
+		printf("hello: %d %d %d %d %d %d %d %d %d %d\n", i, i+1, i+2, i+3, i+4, i+5, i+6, i+7, i+8, i+9);	
+
+	count += 1000000;
 	return 0;
 }
